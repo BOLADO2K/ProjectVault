@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProjectVault | Gerenciador de Projetos</title>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/app/style.css">
+</head>
+<body>
+    <header>
+        <div class="hero">
+            <h1>ProjectVault</h1>
+            <p class="subtitle">Seu gerenciador de projetos personalizado</p>
+        </div>
+    </header>
+    
+    
+    
+    <section id="projetos" class="projects">
+        <h2 class="section-title">Meus Projetos</h2>
+        
+        <div class="project-grid" id="project-container">
+            <!-- Os projetos serão carregados dinamicamente do localStorage -->
+        </div>
+        
+        <button id="add-project">+ Adicionar Projeto</button>
+    </section>
+    
+    
+    
+    <!-- Modal para adicionar projeto -->
+    <div id="project-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Adicionar Novo Projeto</h2>
+            <form id="project-form">
+                <div class="form-group">
+                    <label class="form-label" for="project-title">Título do Projeto</label>
+                    <input type="text" id="project-title" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="project-image">URL da Imagem</label>
+                    <input type="text" id="project-image" class="form-input" placeholder="https://exemplo.com/imagem.jpg">
+                </div>
+                
+                
+                
+                <div class="form-group">
+                    <label class="form-label" for="project-description">Descrição</label>
+                    <textarea id="project-description" class="form-textarea" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="project-url">URL do Projeto</label>
+                    <input type="text" id="project-url" class="form-input">
+                </div>
+                
+                <button type="submit" class="form-button">Adicionar Projeto</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal de confirmação para excluir projeto -->
+    <div id="confirm-modal" class="confirm-modal">
+        <div class="confirm-content">
+            <h3>Confirmar exclusão</h3>
+            <p>Tem certeza que deseja excluir este projeto?</p>
+            <div class="confirm-actions">
+                <button id="cancel-delete" class="confirm-cancel">Cancelar</button>
+                <button id="confirm-delete" class="confirm-delete">Excluir</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast notification -->
+    <div id="toast" class="toast">
+        <span id="toast-message"></span>
+    </div>
+    <script src="/app/App.js"></script>
+
+</body>
+</html>
