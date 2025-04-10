@@ -4,7 +4,533 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ProjectVault | Gerenciador de Projetos</title>
-    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --background: #121212;
+            --text: #ffffff;
+            --accent: #9d4edd;
+            --accent-light: #bb86fc;
+            --card: #1e1e1e;
+            --danger: #ff5252;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        header {
+            padding: 2rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            position: relative;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: var(--accent);
+            opacity: 0.2;
+            filter: blur(40px);
+        }
+        
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: -50px;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: var(--accent);
+            opacity: 0.15;
+            filter: blur(50px);
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, var(--text), var(--accent-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        
+        .nav a {
+            color: var(--text);
+            text-decoration: none;
+            margin: 0 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+        
+        .nav a:hover::after {
+            width: 100%;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin: 3rem 0;
+            font-size: 2.5rem;
+            color: var(--text);
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--accent), transparent);
+        }
+        
+        .projects {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .project-card {
+            background-color: var(--card);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(157, 78, 221, 0.3);
+        }
+        
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background: linear-gradient(45deg, transparent, var(--accent), transparent) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .project-card:hover::before {
+            opacity: 1;
+        }
+        
+        .project-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .project-info {
+            padding: 1.5rem;
+        }
+        
+        .project-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0.5rem 0;
+            gap: 0.5rem;
+        }
+        
+        .tag {
+            background-color: rgba(157, 78, 221, 0.2);
+            color: var(--accent-light);
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+        }
+        
+        .project-desc {
+            margin: 1rem 0;
+            color: var(--text);
+            opacity: 0.8;
+        }
+        
+        .delete-project {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--danger);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+            border: none;
+        }
+        
+        .project-card:hover .delete-project {
+            opacity: 1;
+        }
+        
+        #add-project {
+            margin: 3rem auto;
+            width: 200px;
+            padding: 1rem;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        #add-project:hover {
+            background-color: var(--accent-light);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(157, 78, 221, 0.4);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 5rem;
+            padding: 2rem;
+            background-color: var(--card);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--accent), transparent);
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .social-link {
+            color: var(--text);
+            font-size: 1.5rem;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        
+        .social-link:hover {
+            color: var(--accent);
+            transform: translateY(-3px);
+        }
+        
+        /* Modal para adicionar projeto */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow: auto;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: var(--card);
+            width: 90%;
+            max-width: 600px;
+            border-radius: 10px;
+            padding: 2rem;
+            position: relative;
+            animation: modal-in 0.3s ease forwards;
+        }
+        
+        @keyframes modal-in {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #2a2a2a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            color: var(--text);
+            font-size: 1rem;
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .tag-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .added-tag {
+            background-color: rgba(157, 78, 221, 0.2);
+            color: var(--accent-light);
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .remove-tag {
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .form-button {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-button:hover {
+            background-color: var(--accent-light);
+        }
+        
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--accent);
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            z-index: 2000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* Animações */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .project-card {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .nav {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Confirmação para excluir */
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .confirm-content {
+            background-color: var(--card);
+            width: 90%;
+            max-width: 400px;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .confirm-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .confirm-cancel {
+            background-color: transparent;
+            border: 1px solid var(--text);
+            color: var(--text);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .confirm-delete {
+            background-color: var(--danger);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -14,7 +540,11 @@
         </div>
     </header>
     
-    
+    <nav class="nav">
+        <a href="#projetos">Projetos</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#contato">Contato</a>
+    </nav>
     
     <section id="projetos" class="projects">
         <h2 class="section-title">Meus Projetos</h2>
@@ -26,7 +556,16 @@
         <button id="add-project">+ Adicionar Projeto</button>
     </section>
     
-    
+    <footer id="contato">
+        <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+        </div>
+        <p>© 2025 Todos os direitos reservados</p>
+        <p>nome@email.com</p>
+    </footer>
     
     <!-- Modal para adicionar projeto -->
     <div id="project-modal" class="modal">
@@ -44,7 +583,11 @@
                     <input type="text" id="project-image" class="form-input" placeholder="https://exemplo.com/imagem.jpg">
                 </div>
                 
-                
+                <div class="form-group">
+                    <label class="form-label" for="project-tags">Tecnologias (Digite e pressione Enter)</label>
+                    <input type="text" id="project-tags" class="form-input">
+                    <div class="tag-container" id="tags-container"></div>
+                </div>
                 
                 <div class="form-group">
                     <label class="form-label" for="project-description">Descrição</label>
@@ -77,7 +620,279 @@
     <div id="toast" class="toast">
         <span id="toast-message"></span>
     </div>
-    <script src="App.js"></script>
 
+    <script>
+        // Gerenciar LocalStorage
+        const STORAGE_KEY = 'portfolio_projects';
+        let projectsData = [];
+        let currentProjectId = null;
+        
+        // Carregar projetos do LocalStorage
+        function loadProjects() {
+            const storedProjects = localStorage.getItem(STORAGE_KEY);
+            if (storedProjects) {
+                projectsData = JSON.parse(storedProjects);
+                renderProjects();
+            } else {
+                // Se não houver projetos no localStorage, adicionar alguns exemplos
+                const exampleProjects = [
+                    {
+                        id: generateId(),
+                        title: 'App de Finanças Pessoais',
+                        image: 'https://via.placeholder.com/400x200/333/9d4edd?text=Projeto+1',
+                        tags: ['React', 'Node.js', 'MongoDB'],
+                        description: 'Aplicativo para controle de finanças pessoais com gráficos e relatórios detalhados.',
+                        url: 'https://github.com'
+                    },
+                    {
+                        id: generateId(),
+                        title: 'E-commerce de Produtos',
+                        image: 'https://via.placeholder.com/400x200/333/9d4edd?text=Projeto+2',
+                        tags: ['Vue.js', 'Express', 'MySQL'],
+                        description: 'Plataforma completa de e-commerce com sistema de pagamentos e gerenciamento de produtos.',
+                        url: 'https://github.com'
+                    },
+                    {
+                        id: generateId(),
+                        title: 'App de Previsão do Tempo',
+                        image: 'https://via.placeholder.com/400x200/333/9d4edd?text=Projeto+3',
+                        tags: ['JavaScript', 'API', 'CSS3'],
+                        description: 'Aplicativo que mostra previsão do tempo para qualquer local, com interface adaptativa.',
+                        url: 'https://github.com'
+                    }
+                ];
+                
+                projectsData = exampleProjects;
+                saveProjects();
+                renderProjects();
+            }
+        }
+        
+        // Salvar projetos no LocalStorage
+        function saveProjects() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(projectsData));
+        }
+        
+        // Gerar ID único para cada projeto
+        function generateId() {
+            return Math.random().toString(36).substr(2, 9);
+        }
+        
+        // Renderizar projetos na tela
+        function renderProjects() {
+            const container = document.getElementById('project-container');
+            container.innerHTML = '';
+            
+            projectsData.forEach((project, index) => {
+                const projectElement = document.createElement('div');
+                projectElement.classList.add('project-card');
+                projectElement.setAttribute('data-id', project.id);
+                projectElement.style.animationDelay = `${index * 0.1}s`;
+                
+                // Verificar se o projeto tem URL
+                const hasUrl = project.url && project.url.trim() !== '';
+                
+                projectElement.innerHTML = `
+                    <div class="delete-project" data-id="${project.id}">×</div>
+                    <img src="${project.image}" alt="${project.title}" class="project-img">
+                    <div class="project-info">
+                        <h3 class="project-title">${project.title}</h3>
+                        <div class="project-tags">
+                            ${project.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                        <p class="project-desc">${project.description}</p>
+                    </div>
+                `;
+                
+                // Tornar o cartão clicável se tiver URL
+                if (hasUrl) {
+                    projectElement.addEventListener('click', function(e) {
+                        // Verificar se o clique não foi no botão de deletar
+                        if (!e.target.closest('.delete-project')) {
+                            window.open(project.url, '_blank');
+                        }
+                    });
+                } else {
+                    projectElement.addEventListener('click', function(e) {
+                        // Verificar se o clique não foi no botão de deletar
+                        if (!e.target.closest('.delete-project')) {
+                            showToast('Este projeto não possui URL disponível');
+                        }
+                    });
+                }
+                
+                container.appendChild(projectElement);
+                
+                // Adicionar evento para excluir projeto
+                projectElement.querySelector('.delete-project').addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.getAttribute('data-id');
+                    openConfirmModal(id);
+                });
+            });
+            
+            // Adicionar observador para animações
+            const projectCards = document.querySelectorAll('.project-card');
+            const observerOptions = {
+                threshold: 0.1
+            };
+            
+            const observer = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            
+            projectCards.forEach(card => {
+                observer.observe(card);
+            });
+        }
+        
+        // Abrir modal de confirmação para excluir
+        function openConfirmModal(id) {
+            currentProjectId = id;
+            document.getElementById('confirm-modal').style.display = 'flex';
+        }
+        
+        // Excluir projeto
+        function deleteProject(id) {
+            projectsData = projectsData.filter(project => project.id !== id);
+            saveProjects();
+            renderProjects();
+            showToast('Projeto excluído com sucesso!');
+        }
+        
+        // Mostrar toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Evento para confirmar exclusão
+        document.getElementById('confirm-delete').addEventListener('click', function() {
+            if (currentProjectId) {
+                deleteProject(currentProjectId);
+                document.getElementById('confirm-modal').style.display = 'none';
+                currentProjectId = null;
+            }
+        });
+        
+        // Evento para cancelar exclusão
+        document.getElementById('cancel-delete').addEventListener('click', function() {
+            document.getElementById('confirm-modal').style.display = 'none';
+            currentProjectId = null;
+        });
+        
+        // Fechar modal de confirmação ao clicar fora
+        window.addEventListener('click', function(event) {
+            if (event.target === document.getElementById('confirm-modal')) {
+                document.getElementById('confirm-modal').style.display = 'none';
+                currentProjectId = null;
+            }
+        });
+        
+        // Abrir o modal de adicionar projeto
+        document.getElementById('add-project').addEventListener('click', function() {
+            document.getElementById('project-modal').style.display = 'flex';
+        });
+        
+        // Fechar o modal de adicionar projeto
+        document.querySelector('.close').addEventListener('click', function() {
+            document.getElementById('project-modal').style.display = 'none';
+        });
+        
+        // Fechar o modal de adicionar projeto ao clicar fora
+        window.addEventListener('click', function(event) {
+            if (event.target === document.getElementById('project-modal')) {
+                document.getElementById('project-modal').style.display = 'none';
+            }
+        });
+        
+        // Gerenciar tags
+        const tagInput = document.getElementById('project-tags');
+        const tagContainer = document.getElementById('tags-container');
+        const tags = [];
+        
+        tagInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && tagInput.value.trim() !== '') {
+                e.preventDefault();
+                const tag = tagInput.value.trim();
+                
+                if (!tags.includes(tag)) {
+                    tags.push(tag);
+                    const tagElement = document.createElement('div');
+                    tagElement.classList.add('added-tag');
+                    tagElement.innerHTML = `
+                        ${tag}
+                        <span class="remove-tag" data-tag="${tag}">&times;</span>
+                    `;
+                    tagContainer.appendChild(tagElement);
+                    tagInput.value = '';
+                    
+                    // Adicionar evento para remover a tag
+                    tagElement.querySelector('.remove-tag').addEventListener('click', function() {
+                        const tagToRemove = this.getAttribute('data-tag');
+                        const index = tags.indexOf(tagToRemove);
+                        if (index !== -1) {
+                            tags.splice(index, 1);
+                            tagElement.remove();
+                        }
+                    });
+                }
+            }
+        });
+        
+        // Adicionar novo projeto
+        document.getElementById('project-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('project-title').value;
+            const imageUrl = document.getElementById('project-image').value || `https://via.placeholder.com/400x200/333/9d4edd?text=${encodeURIComponent(title)}`;
+            const description = document.getElementById('project-description').value;
+            const projectUrl = document.getElementById('project-url').value;
+            
+            // Criar objeto do projeto
+            const newProject = {
+                id: generateId(),
+                title,
+                image: imageUrl,
+                tags: [...tags],
+                description,
+                url: projectUrl
+            };
+            
+            // Adicionar projeto aos dados
+            projectsData.push(newProject);
+            
+            // Salvar no localStorage
+            saveProjects();
+            
+            // Renderizar projetos atualizados
+            renderProjects();
+            
+            // Mostrar notificação
+            showToast('Projeto adicionado com sucesso!');
+            
+            // Limpar o formulário
+            this.reset();
+            tagContainer.innerHTML = '';
+            tags.length = 0;
+            
+            // Fechar o modal
+            document.getElementById('project-modal').style.display = 'none';
+        });
+        
+        // Carregar projetos ao iniciar a página
+        window.addEventListener('DOMContentLoaded', loadProjects);
+    </script>
 </body>
 </html>
